@@ -29,7 +29,7 @@ Atom starts in English unless Windows is in Korean; change it with `"language"` 
 
 ## 라이선스 · License
 
-GPL-3.0 (`LICENSE`). 소스는 zip 안 `source\` 폴더에 있습니다 · Source code is in the `source\` folder of the zip.
+GPL-3.0 (`LICENSE`). 소스는 이 저장소의 [`source/`](source/) 와 zip 안 `source\` 폴더에 있습니다(명령표·목소리·모델 같은 데이터는 zip 에) · Source code: [`source/`](source/) in this repo and in the zip (data files such as `commands.tsv`, voices and models ship in the release zip).
 함께 쓰는 부품(whisper.cpp, Vosk, NumPy, PortAudio 등)과 대답 목소리(Kokoro-82M)의 라이선스는 zip 안 `THIRD-PARTY-NOTICES.txt`.
 
 비공식 팬 도구입니다. Star Citizen 은 Cloud Imperium Games 의 상표입니다. · Unofficial fan tool.
