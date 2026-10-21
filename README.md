@@ -34,4 +34,7 @@ GPL-3.0 (`LICENSE`). 소스는 zip 안 `source\` 폴더에 있습니다 · Sourc
 
 비공식 팬 도구입니다. Star Citizen 은 Cloud Imperium Games 의 상표입니다. · Unofficial fan tool.
 
+개발 uglywolf · 공동 개발 Claude (Anthropic AI) — 기획·게임 시험·조정은 uglywolf, 코드는 함께 작성.
+Developed by uglywolf, co-developed with Claude (Anthropic AI) — design, in-game testing and tuning by uglywolf; code written together.
+
 © 2026 uglywolf
