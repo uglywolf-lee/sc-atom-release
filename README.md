@@ -3,8 +3,11 @@
 「**아톰**」 하고 부르면 켜지고, 그 뒤로는 명령어만 말하면 게임 키를 대신 누릅니다. 대답은 함선 AI 처럼 짧은 영어 음성입니다.
 Say **"Atom"** to turn it on, then just say the command — Atom presses the key and answers in a short ship-AI voice.
 
-명령어 목록 · 설명서 (폰·패드로 보며 익히기) · Command reference & guide:
+명령어 목록 · 설명서 (폰·패드로 보며 익히기):
 https://sc.uglywolf.org/atom
+
+Command reference & guide (English):
+https://sc.uglywolf.org/atom-en
 
 ## 받기 · Download
 
@@ -21,7 +24,8 @@ Download `SC-Atom-<version>.zip` from Releases and unzip. Nothing to install (Wi
 | `train.bat` | 목소리 등록(한국어 권장) · voice training (Korean) |
 | `selftest.bat` | 조종석에서 모드 키 시험 · cockpit key test |
 
-영어로 쓰려면 처음 켤 때 생기는 `atom_config.json` 에서 `"language": "en"`. · For English set `"language": "en"` in `atom_config.json`.
+처음 켤 때 윈도우 표시 언어가 한국어면 한국어, 아니면 영어로 시작합니다(`atom_config.json` 의 `"language"` 로 바꿈).
+Atom starts in English unless Windows is in Korean; change it with `"language"` in `atom_config.json`.
 
 ## 라이선스 · License
 
