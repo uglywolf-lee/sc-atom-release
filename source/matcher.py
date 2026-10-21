@@ -26,7 +26,7 @@ WAKE = {"ko": "아톰", "en": "atom"}
 WAKE_MATCH = 0.6    # 이름은 조금 너그럽게(아톤·아통·다톰)
 # whisper 가 「아톰」을 실제로 이렇게 받아썼다(2026-10-21 녹음). 목소리 등록에서 그 사람 버릇을 더 배운다.
 WAKE_ALIASES = {"ko": {"아톰", "아톤", "아통", "다톰", "바텀", "액턴", "아토", "아좀", "atom"},
-                "en": {"atom", "adam", "atem", "attom"}}
+                "en": {"atom", "adam", "atem", "attom", "athim", "atm", "addthem"}}   # 영어 합성음 시험에서 「Atom」이 실제로 이렇게 받아써짐(2026-10-21)
 # 오피·오브·오플·종료·총려: 게임 중 「아톰 오프」「아톰 종료」가 실제로 이렇게 받아써졌다(2026-10-21 실사용)
 OFF_WORDS = {"ko": {"오프", "오푸", "어프", "오피", "오브", "오플", "꺼", "끄기", "종료", "총려", "off"}, "en": {"off", "of"}}
 OFF_ALIASES = {"ko": set(), "en": set()}   # 목소리 등록에서 배운 「아톰 오프」 받아쓰기(붙여 쓴 꼴)
@@ -193,7 +193,7 @@ def nearest(text, phrases, lang):
 # 아·음·엉·웅: 게임 중 「응」이 7번 이렇게 받아써져 되묻기가 다 버려졌다(2026-10-21 실사용). 되물은 뒤 6초 안에만 본다
 YES = {"ko": {"응", "어", "아", "음", "엉", "웅", "으응", "네", "넵", "넹", "예", "그래", "그래요", "맞아", "맞아요", "맞습니다",
               "오케이", "실행", "해", "해줘", "ㅇㅇ", "yes", "ok", "okay"},
-       "en": {"yes", "yeah", "yep", "yup", "correct", "affirmative", "confirm", "do", "ok", "okay", "sure"}}
+       "en": {"yes", "yeah", "yep", "yup", "correct", "affirmative", "affirm", "roger", "confirm", "do", "ok", "okay", "sure"}}
 NO = {"ko": {"아니", "아니야", "아냐", "아니요", "아뇨", "취소", "됐어", "no"},
       "en": {"no", "nope", "negative", "cancel"}}
 
