@@ -17,6 +17,7 @@ import time
 import numpy as np
 import sounddevice as sd
 
+import game_path
 import i18n
 import keymap
 import matcher
@@ -34,7 +35,7 @@ DEFAULTS = {
     "threads": 2,                           # 인식기 코어(게임에 나머지를 남긴다)
     "audio_ctx": 512,                       # 짧은 명령만큼만 처리(아이맥 프로 0.6초)
     "mic": "",                              # 마이크 이름 일부(비우면 기본 마이크)
-    "actionmaps": "",                       # 비우면 드라이브를 돌며 찾는다
+    "actionmaps": "",                       # 비우면 알아서 찾는다(game_path.py) — 키 파일이나 게임 폴더를 적어도 된다
     "game_window": "Star Citizen",          # 이 이름의 창이 앞에 있을 때만 키를 보낸다
     # 영어는 Vosk(말 목록)가 whisper 보다 낫다(합성음 시험 명령 98% 대 92%, 끄기 6/6 대 2~3/6 — vosk_stt.py 머리말).
     # 모델 폴더가 없거나 vosk 가 안 깔렸으면 whisper 로 듣는다
@@ -59,20 +60,6 @@ def log(msg):
         pass
 
 
-def find_actionmaps():
-    """스타시티즌 LIVE 키 설정 파일을 찾는다(설치 드라이브·폴더가 사람마다 다르다)."""
-    tail = os.path.join("StarCitizen", "LIVE", "user", "client", "0", "Profiles", "default", "actionmaps.xml")
-    roots = []
-    for d in "CDEFGHIJ":
-        roots += [f"{d}:\\Roberts Space Industries", f"{d}:\\Program Files\\Roberts Space Industries",
-                  f"{d}:\\Games\\Roberts Space Industries"]
-    for r in roots:
-        p = os.path.join(r, tail)
-        if os.path.exists(p):
-            return p
-    return ""
-
-
 def system_language():
     """처음 켤 때의 말: 윈도우 표시 언어가 한국어면 ko, 아니면 en — 영어권 사용자가 설정을 안 고쳐도 되게(2026-10-21, 레딧 공개 준비)."""
     if sys.platform == "win32":
@@ -94,9 +81,8 @@ def load_config():
         cfg["language"] = system_language()
         with open(CONFIG, "w", encoding="utf-8") as f:
             json.dump(cfg, f, ensure_ascii=False, indent=1)
-    if not cfg["actionmaps"]:
-        cfg["actionmaps"] = find_actionmaps()
     i18n.LANG = cfg["language"]               # 화면·로그 글도 그 말로
+    cfg["actionmaps"], _ = game_path.find(cfg["actionmaps"])   # 설치 자리가 사람마다 다르다
     return cfg
 
 
@@ -153,13 +139,13 @@ class KeySender(threading.Thread):
             m = os.path.getmtime(path)
         except OSError:
             if self.mtime is not False:
-                log(T(f"키 설정 파일 없음 — 게임 기본 키로: {path}", f"No keybinding file — using game defaults: {path}"))
+                log(T("게임 기본 키로 보냅니다 — ", "Using game default keys — ") + game_path.missing_message(path))
             self.binds, self.mtime = {}, False
             return
         if m != self.mtime:
             self.binds, _ = keymap.read_user(path)
             self.mtime = m
-            log(T(f"키 설정 읽음 ({len(self.binds)}개 바뀐 키)", f"Keybindings loaded ({len(self.binds)} changed keys)"))
+            log(T(f"키 설정 읽음 ({len(self.binds)}개 바뀐 키): {path}", f"Keybindings loaded ({len(self.binds)} changed keys): {path}"))
 
     def key_for(self, action):
         self.reload()

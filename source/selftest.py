@@ -16,7 +16,7 @@ import keymap
 import sendkeys
 from i18n import T
 
-ACTIONMAPS = ""        # 비우면 아톰처럼 드라이브를 돌며 찾는다(atom.find_actionmaps — 친구 PC 는 설치 위치가 다르다)
+ACTIONMAPS = ""        # 비우면 아톰처럼 찾는다(game_path.find — 친구 PC 는 설치 위치가 다르다)
 LOG = os.path.join(keymap.HERE, "selftest_log.txt")
 
 # 걸어 다니는 상태(정거장·도시)에서 화면으로 바로 보이는 것만 — 배를 부를 필요 없이.
@@ -60,7 +60,12 @@ def main(which="ship", path=ACTIONMAPS):
     if not path:
         import atom
         path = atom.load_config()["actionmaps"]
-    binds, _ = keymap.read_user(path)
+    import game_path
+    if game_path.missing_message(path):              # 키 파일이 없으면 게임 기본 키로 시험한다(아톰도 그렇게 보낸다)
+        print(game_path.missing_message(path))
+        binds = {}
+    else:
+        binds, _ = keymap.read_user(path)
     with open(LOG, "w", encoding="utf-8") as log:
         def say(msg):
             line = f"{time.strftime('%H:%M:%S')} {msg}"

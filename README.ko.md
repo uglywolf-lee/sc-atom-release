@@ -23,6 +23,9 @@ https://sc.uglywolf.org/atom
 
 처음 켤 때 윈도우 표시 언어가 한국어면 한국어, 아니면 영어로 시작합니다(`atom_config.json` 의 `"language"` 로 바꿈).
 
+게임을 어느 드라이브·폴더에 깔았든 알아서 찾습니다. 그래도 `keys.bat` 이 못 찾으면 그 창에 게임 폴더를 끌어다 놓거나,
+`atom_config.json` 의 `"actionmaps"` 에 게임 폴더를 적습니다(예: `"D:/Games/Roberts Space Industries/StarCitizen"`).
+
 ## 라이선스
 
 GPL-3.0 (`LICENSE`). 소스는 이 저장소의 [`source/`](source/) 와 zip 안 `source\` 폴더에 있습니다(명령표·목소리·모델 같은 데이터는 zip 에).

@@ -6,7 +6,8 @@
   SC-Atom.exe train [...]     목소리 등록(인자는 train.py)    ← train.bat
   SC-Atom.exe selftest [foot] 조종석 키 시험                  ← selftest.bat
   SC-Atom.exe keys [apply|undo|show|plan]  기본 키 없는 명령에 빈 왼쪽 Alt+글자 넣기(게임을 끄고) ← keys.bat
-키 설정 파일(actionmaps.xml)은 아톰처럼 드라이브를 돌며 찾는다. 설정(atom_config.json)의 actionmaps 로 정할 수도 있다.
+키 설정 파일(actionmaps.xml)은 game_path.py 가 찾는다(런처 기록 → 흔한 자리 → 드라이브 훑기 → 물어보기).
+설정(atom_config.json)의 actionmaps 에 키 파일이나 게임 폴더를 적어 정할 수도 있다.
 """
 import sys
 
@@ -25,11 +26,12 @@ def main(argv):
     elif cmd == "keys":
         import atom
         import keymap
-        path = atom.load_config()["actionmaps"]
-        if not path:
-            atom.log(atom.T("스타시티즌 키 설정 파일(actionmaps.xml)을 못 찾았습니다 — 게임을 한 번 켜서 키 설정을 저장하세요",
-                            "Star Citizen keybinding file (actionmaps.xml) not found — open the game and save your keybindings once"))
+        import game_path
+        path = atom.load_config()["actionmaps"] or game_path.ask()   # 못 찾았으면 이 창에서 폴더를 받는다
+        if game_path.missing_message(path):
+            atom.log(game_path.missing_message(path))
             return
+        atom.log(atom.T(f"키 설정 파일: {path}", f"Keybinding file: {path}"))
         keymap.main(["keymap", (argv[1] if len(argv) > 1 else "apply"), path])
     else:
         import atom

@@ -20,7 +20,7 @@ site = os.path.dirname(os.path.dirname(pywhispercpp.__file__))
 for pat in ("whisper-*.dll", "ggml*.dll", "_pywhispercpp*.pyd"):
     binaries += [(f, ".") for f in glob.glob(os.path.join(site, pat))]
 
-hidden += ["atom", "atom_home", "i18n", "keymap", "matcher", "mic_pick", "reply", "selftest", "sendkeys",
+hidden += ["atom", "atom_home", "game_path", "i18n", "keymap", "matcher", "mic_pick", "reply", "selftest", "sendkeys",
            "stt", "train", "vosk_stt", "winsound", "tkinter"]
 
 a = Analysis(

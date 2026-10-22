@@ -15,7 +15,7 @@ import zipfile
 
 SRC = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = ["commands.tsv", "lines.tsv", "training_ko.tsv", "training_en.tsv", "default_keys.txt", "README.md", "LICENSE"]
-CODE = ["sc_atom.py", "atom.py", "atom_home.py", "i18n.py", "keymap.py", "matcher.py", "mic_pick.py", "reply.py",
+CODE = ["sc_atom.py", "atom.py", "atom_home.py", "game_path.py", "i18n.py", "keymap.py", "matcher.py", "mic_pick.py", "reply.py",
         "selftest.py", "sendkeys.py", "stt.py", "train.py", "vosk_stt.py", "SC-Atom.spec",
         "voices/build_voices.py", "voices/check_voices.py", "tools/make_release.py"]
 MODELS = ["ggml-tiny.bin", "vosk-model-small-en-us-0.15"]

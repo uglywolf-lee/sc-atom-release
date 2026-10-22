@@ -21,6 +21,9 @@ Get `SC-Atom-<version>.zip` from [Releases](../../releases/latest) and unzip it.
 
 Atom starts in English unless Windows is set to Korean; change it with `"language"` in `atom_config.json`.
 
+Atom finds the game wherever you installed it (any drive or folder). If `keys.bat` still can't find it, drag the game folder into its window,
+or set `"actionmaps"` in `atom_config.json` to it (e.g. `"D:/Games/Roberts Space Industries/StarCitizen"`).
+
 ## License
 
 GPL-3.0 (`LICENSE`). Source code is in [`source/`](source/) in this repo and in the `source\` folder of the zip (data files such as `commands.tsv`, voices and models ship in the release zip).
