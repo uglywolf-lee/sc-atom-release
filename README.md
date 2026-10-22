@@ -25,6 +25,13 @@ Atom starts in English unless Windows is set to Korean; change it with `"languag
 Atom finds the game wherever you installed it (any drive or folder). If `keys.bat` still can't find it, drag the game folder into its window,
 or set `"actionmaps"` in `atom_config.json` to it (e.g. `"D:/Games/Roberts Space Industries/StarCitizen"`).
 
+## If something goes wrong
+
+Open an [issue](../../issues) and attach `atom_log.txt` from the Atom folder (drag the file into the issue box).
+It records what Atom heard, which keys it sent, the keybinding file it found, and the full error if it stopped.
+If keys are the problem, attach `selftest_log.txt` too (made by `selftest.bat`).
+The log shows folder paths (which may include your Windows user name) and your microphone name — feel free to blank them out before posting.
+
 ## License
 
 GPL-3.0 (`LICENSE`). Source code is in [`source/`](source/) in this repo and in the `source\` folder of the zip (data files such as `commands.tsv`, voices and models ship in the release zip).
