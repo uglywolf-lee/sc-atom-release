@@ -18,6 +18,7 @@ https://sc.uglywolf.org/atom
 | `run_atom.bat` | 아톰 켜기 |
 | `mic.bat` | 마이크 고르기 — 말하면서 막대가 움직이는 줄을 누르기 |
 | `keys.bat` | 처음 한 번, 게임을 끄고: 기본 키 없는 명령에 빈 왼쪽 Alt+글자 넣기(백업 생김, `keys.bat undo` 로 되돌림) |
+| `update.bat` | 새 판이 있나 보고, 올릴지 물은 뒤 올림(설정·목소리 등록은 그대로). 켤 때도 새 판이면 묻습니다 |
 | `train.bat` | 목소리 등록(한국어 권장, 10분 안팎) |
 | `selftest.bat` | 조종석에서 모드 키를 말 없이 시험 |
 

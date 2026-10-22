@@ -16,7 +16,7 @@ import zipfile
 SRC = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = ["commands.tsv", "lines.tsv", "training_ko.tsv", "training_en.tsv", "default_keys.txt", "README.md", "LICENSE"]
 CODE = ["sc_atom.py", "atom.py", "atom_home.py", "game_path.py", "i18n.py", "keymap.py", "matcher.py", "mic_pick.py", "reply.py",
-        "selftest.py", "sendkeys.py", "stt.py", "train.py", "vosk_stt.py", "SC-Atom.spec",
+        "selftest.py", "sendkeys.py", "stt.py", "train.py", "updater.py", "vosk_stt.py", "SC-Atom.spec",
         "voices/build_voices.py", "voices/check_voices.py", "tools/make_release.py"]
 MODELS = ["ggml-tiny.bin", "vosk-model-small-en-us-0.15"]
 BATS = {
@@ -25,6 +25,7 @@ BATS = {
     "train.bat": ("SC-Atom voice training", "SC-Atom.exe train %*"),
     "selftest.bat": ("SC-Atom key test", "SC-Atom.exe selftest %*"),
     "keys.bat": ("SC-Atom keys", "SC-Atom.exe keys %*"),
+    "update.bat": None,                                # pause 없이(아래) — 올리는 동안 이 bat 자신도 새 것으로 바뀐다
 }
 NOTICES = """SC-Atom — 함께 묶인 부품과 라이선스 / Third-party components and licenses
 
@@ -73,7 +74,12 @@ def main(dist, models, out_root, version):
         p = os.path.join(models, m)
         (shutil.copytree if os.path.isdir(p) else shutil.copy2)(p, os.path.join(out, "models", m))
     for name, spec in BATS.items():
-        text = bat(*spec) if spec else "@echo off\r\ncd /d \"%~dp0\"\r\nstart \"\" SC-Atom.exe mic\r\n"
+        if spec:
+            text = bat(*spec)
+        elif name == "update.bat":                     # 묻기·닫기는 SC-Atom.exe update 가 한다
+            text = "@echo off\r\nchcp 65001 >nul\r\ntitle SC-Atom update\r\ncd /d \"%~dp0\"\r\nSC-Atom.exe update %*\r\n"
+        else:
+            text = "@echo off\r\ncd /d \"%~dp0\"\r\nstart \"\" SC-Atom.exe mic\r\n"
         with open(os.path.join(out, name), "w", encoding="utf-8", newline="") as f:
             f.write(text)
     for c in CODE:

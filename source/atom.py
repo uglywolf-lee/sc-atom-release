@@ -24,6 +24,7 @@ import matcher
 from i18n import T
 import reply
 import sendkeys
+import updater
 
 from atom_home import HERE
 CONFIG = os.path.join(HERE, "atom_config.json")
@@ -342,6 +343,8 @@ def main():
     log(T("명령어 목록·설명서 (폰·패드로 보세요): " + REFERENCE, "Command list & guide (open on your phone): " + REFERENCE + "-en"))
     log(T(f"대기 중 — 「{matcher.WAKE[lang]}」 하면 켜지고 「{matcher.WAKE[lang]} 오프」 하면 꺼집니다",
            "Standing by — say \"Atom\" to turn on, \"Atom off\" to turn off"))
+    # 새 판 확인(딴 실 — 인터넷이 느려도 듣기는 바로 시작). 새 판이면 알리고 묻는다, 억지로 올리지 않는다
+    threading.Thread(target=updater.check_on_start, args=(log,), daemon=True).start()
     def mic_check(db):
         if db < SILENT_DB:
             replier.say("sys", "mic_silent", "Microphone is silent.")

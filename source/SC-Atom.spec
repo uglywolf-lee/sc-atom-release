@@ -21,7 +21,7 @@ for pat in ("whisper-*.dll", "ggml*.dll", "_pywhispercpp*.pyd"):
     binaries += [(f, ".") for f in glob.glob(os.path.join(site, pat))]
 
 hidden += ["atom", "atom_home", "game_path", "i18n", "keymap", "matcher", "mic_pick", "reply", "selftest", "sendkeys",
-           "stt", "train", "vosk_stt", "winsound", "tkinter"]
+           "stt", "train", "updater", "vosk_stt", "winsound", "tkinter"]
 
 a = Analysis(
     ["sc_atom.py"],

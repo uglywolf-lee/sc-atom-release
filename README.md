@@ -16,6 +16,7 @@ Get `SC-Atom-<version>.zip` from [Releases](../../releases/latest) and unzip it.
 | `run_atom.bat` | Start Atom |
 | `mic.bat` | Pick your microphone — speak and click the row whose bar moves |
 | `keys.bat` | Once, with the game closed: add a spare Left Alt + letter to actions that have no default key (backup made, `keys.bat undo` reverts) |
+| `update.bat` | Check for a new version; asks before updating (settings and voice profile are kept). Atom also asks at start when one is out |
 | `selftest.bat` | Cockpit key test — presses the mode keys one by one, no talking |
 | `train.bat` | Voice training (mainly for Korean) |
 
