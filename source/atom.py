@@ -49,6 +49,11 @@ END_SILENCE = 0.6                           # 이만큼 조용하면 한 마디 
 ASK_WAIT = 6.0                              # 되물은 뒤 이 안에 다시 말하면 그 대답으로 본다
 MAX_COMMAND = 3.0                           # 이보다 긴 말은 대화로 보고 버린다(「채프 채프 플레어」 2초 남짓)
 MAX_UTTER = 5.0                             # 한 마디 최대 길이
+# 대기 중에 말이 계속 들리면 「먼저 아톰이라고 부르세요」 — 이슈 #1(2026-10-22): 아톰을 안 부르고 명령만 말해 한 번도 안 켜짐
+STANDBY_HINT_N = 3                          # 이만큼 무시하면
+STANDBY_HINT_WINDOW = 60.0                  # 이 안에
+STANDBY_HINT_EVERY = 300.0                  # 알림은 이만큼에 한 번
+EN_HINT_N = 3                               # 한국어 모드에서 영어 말이 이만큼 들리면 en 을 권한다(한 번만)
 
 
 def log(msg):
@@ -288,6 +293,12 @@ def ask_text(c):
     return f"Did you mean {c['영어 말'].lower()}?"
 
 
+def latin_ratio(text):
+    """글자 가운데 로마자 비율(글자가 4개 미만이면 0) — 한국어 모드에서 영어로 말하나 보기."""
+    letters = [c for c in text if c.isalpha()]
+    return sum(c.isascii() for c in letters) / len(letters) if len(letters) >= 4 else 0.0
+
+
 def set_title(state):
     """창 제목에 지금 상태 — 작업표시줄에서도 무엇이 도는지 보이게(2026-10-21 사용자: 「수상하게 아무것도 안 뜨면 안 된다」)."""
     if sys.platform == "win32":
@@ -338,6 +349,7 @@ def main():
     active = False
     set_title(T("대기 중 (「아톰」 하면 켜짐)", "standing by (say \"Atom\")"))
     asked = None                            # 되물은 명령과 그 시각 — (동작, 시각)
+    ignored, hinted, english, en_hinted = [], -1e9, 0, False   # 대기 중 무시한 시각들·마지막 알림·영어 말 수
     replier.say("sys", "ready", "Atom standing by.")
     # 주소는 줄 끝에 둔다(터미널에서 눌러도 뒤 글자가 안 딸려 오게)
     log(T("명령어 목록·설명서 (폰·패드로 보세요): " + REFERENCE, "Command list & guide (open on your phone): " + REFERENCE + "-en"))
@@ -361,6 +373,14 @@ def main():
         if stt.rejects(text):               # Vosk: 목록 밖의 말이 섞인 마디 = 대화
             log(T(f"(무시) {text}  [{took:.2f}초]", f"(ignored) {text}  [{took:.2f}s]"))
             continue
+        if lang == "ko" and not en_hinted and latin_ratio(text) >= 0.5:      # 한국어 받아쓰기는 영어를 「미소스 온트 Captain」처럼 섞어 낸다(이슈 #1)
+            english += 1
+            if english >= EN_HINT_N:            # 이 사람은 한국어 화면을 못 읽을 수 있다 — 두 말로 적는다
+                en_hinted = True
+                log('영어로 말씀하시는 것 같습니다 — 영어로 쓰려면 아톰을 끄고 atom_config.json 의 "language" 를 "en" 으로 바꾸세요 / '
+                    'You seem to be speaking English while Atom is in Korean mode — close Atom and set "language": "en" in atom_config.json')
+                replier.last_spoke = -1e9
+                replier.say("sys", "use_english", "English heard. Set the language to English in the config file.")
         if matcher.is_off(text, lang):
             if active:
                 log(T(f"꺼짐 「{text}」  [{took:.2f}초]", f"Off \"{text}\"  [{took:.2f}s]"))
@@ -379,6 +399,14 @@ def main():
             continue
         if not active:
             log(T(f"(대기 중이라 무시) {text}  [{took:.2f}초]", f"(standing by, ignored) {text}  [{took:.2f}s]"))
+            now = time.time()
+            ignored = [x for x in ignored if now - x < STANDBY_HINT_WINDOW] + [now]
+            if len(ignored) >= STANDBY_HINT_N and now - hinted > STANDBY_HINT_EVERY:
+                hinted = now
+                log(T(f"대기 중입니다 — 먼저 「{matcher.WAKE[lang]}」 하고 부른 뒤 대답을 듣고 명령을 말하세요 / Standing by — say \"Atom\" first",
+                      "Standing by — say \"Atom\" first, wait for the reply, then say the command"))
+                replier.last_spoke = -1e9           # 게임 중엔 창을 안 본다 — 소리로도 알린다
+                replier.say("sys", "standby_hint", "Standing by. Say Atom first.")
             continue
         # 되물은 참이면: 「응」은 실행, 「아니」는 취소, 그 밖의 말은 아래에서 새 명령으로 읽는다
         confirmed = False                   # 「응」으로 확인한 것은 메아리 검사에서 뺀다
