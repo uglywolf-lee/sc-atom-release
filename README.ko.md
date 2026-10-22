@@ -9,7 +9,7 @@ https://sc.uglywolf.org/atom
 
 ## 받기
 
-[Releases](../../releases/latest) 에서 `SC-Atom-<판>.zip` 을 받아 풉니다. 설치·파이썬 필요 없음(윈도우 10/11 64비트).
+[Releases](https://github.com/uglywolf-lee/sc-atom-release/releases/latest) 에서 `SC-Atom-<판>.zip` 을 받아 풉니다. 설치·파이썬 필요 없음(윈도우 10/11 64비트).
 
 한글채팅(SC-KoChat)을 쓰면 아톰 칸의 「다운로드」로 받고 「실행」·「정지」로 켜고 끕니다.
 
@@ -29,14 +29,14 @@ https://sc.uglywolf.org/atom
 
 ## 안 될 때
 
-[이슈](../../issues)를 열고 아톰 폴더의 `atom_log.txt` 를 첨부해 주세요(파일을 이슈 입력칸에 끌어다 놓으면 됩니다).
+[이슈](https://github.com/uglywolf-lee/sc-atom-release/issues)를 열고 아톰 폴더의 `atom_log.txt` 를 첨부해 주세요(파일을 이슈 입력칸에 끌어다 놓으면 됩니다).
 알아들은 말, 보낸 키, 찾은 키 설정 파일, 멈췄을 때의 오류 전문이 남는 파일입니다.
 키가 문제라면 `selftest.bat` 이 만드는 `selftest_log.txt` 도 같이 올려 주세요.
 기록에는 폴더 경로(윈도우 사용자 이름이 들어갈 수 있음)와 마이크 이름이 찍힙니다 — 올리기 전에 가려도 됩니다.
 
 ## 라이선스
 
-GPL-3.0 (`LICENSE`). 소스는 이 저장소의 [`source/`](source/) 와 zip 안 `source\` 폴더에 있습니다(명령표·목소리·모델 같은 데이터는 zip 에).
+GPL-3.0 (`LICENSE`). 소스는 이 저장소의 [`source/`](https://github.com/uglywolf-lee/sc-atom-release/tree/main/source) 와 zip 안 `source\` 폴더에 있습니다(명령표·목소리·모델 같은 데이터는 zip 에).
 함께 쓰는 부품(whisper.cpp, Vosk, NumPy, PortAudio 등)과 대답 목소리(Kokoro-82M)의 라이선스는 zip 안 `THIRD-PARTY-NOTICES.txt`.
 
 비공식 팬 도구입니다. Star Citizen 은 Cloud Imperium Games 의 상표입니다.

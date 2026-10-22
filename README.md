@@ -9,7 +9,7 @@ https://sc.uglywolf.org/atom-en
 
 ## Download
 
-Get `SC-Atom-<version>.zip` from [Releases](../../releases/latest) and unzip it. Nothing to install (Windows 10/11 64-bit).
+Get `SC-Atom-<version>.zip` from [Releases](https://github.com/uglywolf-lee/sc-atom-release/releases/latest) and unzip it. Nothing to install (Windows 10/11 64-bit).
 
 | File | What it does |
 |---|---|
@@ -27,14 +27,14 @@ or set `"actionmaps"` in `atom_config.json` to it (e.g. `"D:/Games/Roberts Space
 
 ## If something goes wrong
 
-Open an [issue](../../issues) and attach `atom_log.txt` from the Atom folder (drag the file into the issue box).
+Open an [issue](https://github.com/uglywolf-lee/sc-atom-release/issues) and attach `atom_log.txt` from the Atom folder (drag the file into the issue box).
 It records what Atom heard, which keys it sent, the keybinding file it found, and the full error if it stopped.
 If keys are the problem, attach `selftest_log.txt` too (made by `selftest.bat`).
 The log shows folder paths (which may include your Windows user name) and your microphone name — feel free to blank them out before posting.
 
 ## License
 
-GPL-3.0 (`LICENSE`). Source code is in [`source/`](source/) in this repo and in the `source\` folder of the zip (data files such as `commands.tsv`, voices and models ship in the release zip).
+GPL-3.0 (`LICENSE`). Source code is in [`source/`](https://github.com/uglywolf-lee/sc-atom-release/tree/main/source) in this repo and in the `source\` folder of the zip (data files such as `commands.tsv`, voices and models ship in the release zip).
 Third-party components (whisper.cpp, Vosk, NumPy, PortAudio …) and the reply voices (Kokoro-82M) are listed in `THIRD-PARTY-NOTICES.txt` inside the zip.
 
 Unofficial fan tool. Star Citizen is a trademark of Cloud Imperium Games.

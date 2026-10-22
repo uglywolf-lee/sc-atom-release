@@ -14,7 +14,10 @@ import sys
 import zipfile
 
 SRC = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA = ["commands.tsv", "lines.tsv", "training_ko.tsv", "training_en.tsv", "default_keys.txt", "README.md", "LICENSE"]
+DATA = ["commands.tsv", "lines.tsv", "training_ko.tsv", "training_en.tsv", "default_keys.txt", "LICENSE"]
+# zip 의 README 는 사용자용 — 영어가 먼저(주 사용자가 한국인이 아님, 2026-10-23), 한국어는 README.ko.md.
+# 배포 저장소(sc-atom-release)의 README 와 같은 파일이다(링크는 zip 안에서도 되게 전체 주소). 이 저장소의 README.md 는 만드는 사람용
+DOCS = {"README.md": "release_docs/README.md", "README.ko.md": "release_docs/README.ko.md"}
 CODE = ["sc_atom.py", "atom.py", "atom_home.py", "game_path.py", "i18n.py", "keymap.py", "matcher.py", "mic_pick.py", "reply.py",
         "selftest.py", "sendkeys.py", "stt.py", "train.py", "updater.py", "vosk_stt.py", "SC-Atom.spec",
         "voices/build_voices.py", "voices/check_voices.py", "tools/make_release.py"]
@@ -59,6 +62,8 @@ def main(dist, models, out_root, version):
     shutil.copytree(dist, out)
     for f in DATA:
         shutil.copy2(os.path.join(SRC, f), out)
+    for dst, src in DOCS.items():
+        shutil.copy2(os.path.join(SRC, src), os.path.join(out, dst))
     with open(os.path.join(out, "THIRD-PARTY-NOTICES.txt"), "w", encoding="utf-8", newline="\r\n") as f:
         f.write(NOTICES)
     with open(os.path.join(out, "VERSION.txt"), "w", encoding="utf-8") as f:
