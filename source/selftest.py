@@ -77,6 +77,8 @@ def main(which="ship", path=ACTIONMAPS):
             print(T(f"{s}초 뒤 시작 — 게임 창을 누르세요", f"Starting in {s}s — click the game window"), end="\r")
             time.sleep(1)
         print()
+        if sendkeys.blocked_by_admin():               # 시험 키도 막힌다 — 먼저 알린다
+            say("게임이 관리자 권한으로 돌고 있어 윈도우가 아톰의 키를 막습니다 — run_atom.bat 을 우클릭해 「관리자 권한으로 실행」하거나, RSI 런처를 관리자 권한 없이 켜세요 / Star Citizen is running as administrator, so Windows blocks Atom's keys — right-click run_atom.bat and choose 'Run as administrator', or start the RSI Launcher without admin rights")
         if which == "foot":
             for i, (amap, action, default, mode, look) in enumerate(FOOT_TESTS, 1):
                 c = {"묶음": amap, "동작": action, "기본 키": default}

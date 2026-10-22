@@ -350,6 +350,7 @@ def main():
     set_title(T("대기 중 (「아톰」 하면 켜짐)", "standing by (say \"Atom\")"))
     asked = None                            # 되물은 명령과 그 시각 — (동작, 시각)
     ignored, hinted, english, en_hinted = [], -1e9, 0, False   # 대기 중 무시한 시각들·마지막 알림·영어 말 수
+    admin_checked = None                    # 권한을 본 게임 pid
     replier.say("sys", "ready", "Atom standing by.")
     # 주소는 줄 끝에 둔다(터미널에서 눌러도 뒤 글자가 안 딸려 오게)
     log(T("명령어 목록·설명서 (폰·패드로 보세요): " + REFERENCE, "Command list & guide (open on your phone): " + REFERENCE + "-en"))
@@ -464,6 +465,14 @@ def main():
             log(T(f"게임 창이 앞에 없음 — 안 보냄: {text}", f"Star Citizen not in front — not sent: {text}"))
             replier.say("sys", "not_focused", "Star Citizen is not in focus.")
             continue
+        game_pid = sendkeys.foreground_pid()
+        if game_pid != admin_checked:       # 게임마다 한 번: 관리자 권한 차이면 키가 소리 없이 막힌다(보내기는 그대로 한다)
+            admin_checked = game_pid
+            if sendkeys.blocked_by_admin():
+                log("게임이 관리자 권한으로 돌고 있어 윈도우가 아톰의 키를 막습니다 — run_atom.bat 을 우클릭해 「관리자 권한으로 실행」하거나, RSI 런처를 관리자 권한 없이 켜세요 / Star Citizen is running as administrator, so Windows blocks Atom's keys — right-click run_atom.bat and choose 'Run as administrator', or start the RSI Launcher without admin rights")
+                replier.last_spoke = -1e9
+                replier.say("sys", "admin_needed", "Star Citizen is running as administrator. Run Atom as administrator too.")
+                replier.last_spoke = -1e9
         for a in actions:                   # ① 키 먼저(차례로) ② 대답은 그 뒤에, 아껴서
             key = sender.key_for(a)
             if key is None:

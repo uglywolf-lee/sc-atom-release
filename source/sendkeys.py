@@ -149,9 +149,49 @@ if sys.platform == "win32":
             sc, ext = SCANCODES[name]
             flags = KEYEVENTF_SCANCODE | (KEYEVENTF_EXTENDEDKEY if ext else 0) | (KEYEVENTF_KEYUP if what == "up" else 0)
             _send_one(INPUT(1, _U(ki=KEYBDINPUT(0, sc, flags, 0, KOCHAT_MARK))))
+    # ── 관리자 권한 차이 ─────────────────────────────────
+    # 게임(또는 게임을 띄운 RSI 런처)이 관리자 권한이고 아톰이 아니면 윈도우(UIPI)가 SendInput 을 소리 없이 막는다 —
+    # 반환값도 성공이라 기록엔 보낸 것으로 찍힌다(이슈 #1, 2026-10-23: 「아톰은 정상인데 인겜에서 함이 반응을 못 한다」).
+    def foreground_pid():
+        pid = wintypes.DWORD()
+        ctypes.windll.user32.GetWindowThreadProcessId(ctypes.windll.user32.GetForegroundWindow(), ctypes.byref(pid))
+        return pid.value
+
+    def elevated(pid=None):
+        """그 프로세스(없으면 아톰 자신)가 관리자 권한으로 도나. 알 수 없으면 None."""
+        k32, adv = ctypes.WinDLL("kernel32"), ctypes.WinDLL("advapi32")   # 따로 불러 argtypes 가 남의 호출에 안 번지게
+        k32.OpenProcess.restype = k32.GetCurrentProcess.restype = wintypes.HANDLE
+        k32.CloseHandle.argtypes = [wintypes.HANDLE]
+        adv.OpenProcessToken.argtypes = [wintypes.HANDLE, wintypes.DWORD, ctypes.POINTER(wintypes.HANDLE)]
+        adv.GetTokenInformation.argtypes = [wintypes.HANDLE, ctypes.c_int, ctypes.c_void_p, wintypes.DWORD, ctypes.POINTER(wintypes.DWORD)]
+        proc = k32.GetCurrentProcess() if pid is None else k32.OpenProcess(0x1000, False, pid)   # QUERY_LIMITED_INFORMATION
+        if not proc:
+            return None
+        tok = wintypes.HANDLE()
+        try:
+            if not adv.OpenProcessToken(proc, 0x0008, ctypes.byref(tok)):                     # TOKEN_QUERY
+                return None
+            val, got = wintypes.DWORD(), wintypes.DWORD()
+            ok = adv.GetTokenInformation(tok, 20, ctypes.byref(val), 4, ctypes.byref(got))     # TokenElevation
+            return bool(val.value) if ok else None
+        finally:
+            if tok:
+                k32.CloseHandle(tok)
+            if pid is not None:
+                k32.CloseHandle(proc)
+
+    def blocked_by_admin():
+        """앞에 있는 창(게임)이 관리자 권한이고 아톰은 아니면 True."""
+        return elevated(foreground_pid()) is True and elevated() is False
 else:
     def _emit(what, name):
         print(f"  {what:5} {name}")
+
+    def foreground_pid():
+        return 0
+
+    def blocked_by_admin():
+        return False
 
 
 if __name__ == "__main__":
