@@ -79,8 +79,7 @@ class Replier:
         self.last_heard = -1e9      # 마지막으로 이 명령을 들은 때(대답 여부와 상관없이)
         self.last_spoke = -1e9      # 마지막으로 대답한 때
         self.last_text = ""         # 마지막으로 낸 대답 글(메아리 거르기용)
-        self.last_about = None      # 마지막 대답이 가리킨 동작과 그 소리가 끝나는 벽시계 시각(메아리 거르기용)
-        self.until = 0.0
+        self.started = self.until = 0.0   # 마지막 대답이 나오기 시작한·끝나는 벽시계 시각(메아리 거르기용)
 
     def listen_start(self):
         """명령 버튼을 눌렀을 때: 사람이 말하려는 참이니 대답을 끊는다(마이크에 섞이지 않게)."""
@@ -105,15 +104,16 @@ class Replier:
         self.last_spoke, self.last_text = now, text
         path = path_for(self.voice, kind, name)
         import time as _t
-        self.last_about = name if kind in ("cmd", "ask") else None
-        self.until = _t.time() + wav_seconds(path)
+        self.started = _t.time()
+        self.until = self.started + wav_seconds(path)
         play(path)
         return True
 
-    def echo_of(self, action, began, tail=0.5):
-        """방금 우리가 「퀀텀 모드」를 말했는데(되묻기·대답) 그 소리가 나오는 중이나 막 끝났을 때 시작된 말이
-        또 퀀텀 모드로 들렸다면 그건 스피커 소리가 마이크로 들어온 것 — 확인 없이 실행되면 안 된다."""
-        return action == self.last_about and began <= self.until + tail
+    def playing(self, began, tail=0.5):
+        """그 말이 우리 대답이 나오는 중이나 막 끝났을 때 시작됐나(대답보다 먼저 시작한 말은 사람 말).
+        메아리인지는 이것만으로 못 가린다 — 연달아 말하면 사람 말도 대답 중에 시작한다(atom.py 가 크기로 가린다).
+        마디 시작은 소리보다 0.2초 앞으로 잡히므로(atom.utterances 의 앞 여유) 그만큼 앞까지 본다."""
+        return self.started - 0.3 <= began <= self.until + tail
 
 
 if __name__ == "__main__":

@@ -7,9 +7,11 @@
 
 설정은 옆의 atom_config.json(없으면 기본값으로 만든다). 실행: python atom.py
 """
+import collections
 import json
 import os
 import queue
+import re
 import sys
 import threading
 import time
@@ -41,6 +43,7 @@ DEFAULTS = {
     # 영어는 Vosk(말 목록)가 whisper 보다 낫다(합성음 시험 명령 98% 대 92%, 끄기 6/6 대 2~3/6 — vosk_stt.py 머리말).
     # 모델 폴더가 없거나 vosk 가 안 깔렸으면 whisper 로 듣는다
     "vosk_model": os.path.join("models", "vosk-model-small-en-us-0.15"),
+    "clips": 300,                           # 마디 소리를 최근 몇 개까지 clips\ 에 남기나(0 이면 안 남김)
 }
 REFERENCE = "https://sc.uglywolf.org/atom"   # 명령어 레퍼런스(폰·패드로 보며 익히는 페이지). 설명서는 끝에 -guide
 RATE = 16000
@@ -49,6 +52,21 @@ END_SILENCE = 0.6                           # 이만큼 조용하면 한 마디 
 ASK_WAIT = 6.0                              # 되물은 뒤 이 안에 다시 말하면 그 대답으로 본다
 MAX_COMMAND = 3.0                           # 이보다 긴 말은 대화로 보고 버린다(「채프 채프 플레어」 2초 남짓)
 MAX_UTTER = 5.0                             # 한 마디 최대 길이
+# 말소리 기준은 켤 때 1초만 재면 게임 소리가 커진 뒤 1~2초마다 마디가 잘린다(2026-10-23 로그) —
+# 최근 5초 소리의 아래 20% 를 바탕 소음으로 보고 1초마다 다시 잰다(말 사이사이 쉼이 그 자리에 든다).
+# 말하는 중에도 잰다 — 게임 소리가 이어지면 늘 「말하는 중」이라 그때 안 재면 기준이 영영 안 바뀐다
+FLOOR_WINDOW = 5.0
+FLOOR_PCT = 20
+LEVEL_MAX = 0.08                            # 기준이 이보다 높아지면(-22dB) 목소리까지 못 듣는다 — 여기서 멈춘다
+LEVEL_LOG_EVERY = 30.0                      # 기준이 바뀐 것을 로그에 적는 간격
+CLIPS = os.path.join(HERE, "clips")         # 마디마다 소리를 남긴다 — 어느 마디가 사람 말이었는지 나중에 듣고 가린다
+# 받아쓰기가 소리를 괄호로만 적은 것: (냣지)·[끝]·(박수) — 10-23 로그 453번, 명령 낱말은 0번, 「(냉스)」 1번은 스캔 모드로 실행됨
+# 뒤쪽은 글자 수 한도에 걸려 안 닫힌 것: 「(냣을냣을냣을…」
+# 스피커로 나간 우리 대답이 마이크로 들어온 것(메아리)은 직전 사람 명령보다 최대 크기가 훨씬 작다 —
+# 10-23 게임 중 소리: 연달아 말한 두·세 번째 명령 -2~+3dB, 대답 문구로 받아써진 메아리 -9~-17dB.
+# 예전엔 「대답 중에 같은 명령」이면 메아리로 봐서 연달아 말한 두 번째가 늘 씹혔다(사용자)
+ECHO_DB = 6
+SOUND_TAG = re.compile(r"^\W*(?:[\(\[][^\)\]]*[\)\]]\W*)+$|^\W*[\(\[][^\)\]]*$")
 # 대기 중에 말이 계속 들리면 「먼저 아톰이라고 부르세요」 — 이슈 #1(2026-10-22): 아톰을 안 부르고 명령만 말해 한 번도 안 켜짐
 STANDBY_HINT_N = 3                          # 이만큼 무시하면
 STANDBY_HINT_WINDOW = 60.0                  # 이 안에
@@ -254,9 +272,12 @@ def utterances(cfg, with_time=False, on_ready=None):
     with sd.InputStream(samplerate=RATE, channels=1, dtype="float32", blocksize=n, device=device,
                         callback=lambda data, *_: blocks.put(data[:, 0].copy())):
         t0 = time.time()
-        floor = np.median([np.sqrt(np.mean(blocks.get() ** 2)) for _ in range(int(1 / BLOCK))])
+        first = [float(np.sqrt(np.mean(blocks.get() ** 2))) for _ in range(int(1 / BLOCK))]
+        floor = np.median(first)
         count = int(1 / BLOCK)                # 지금까지 읽은 블록 수 → 그 소리가 난 시각
         level = max(floor * 4, 0.004)
+        hist = collections.deque(first, maxlen=int(FLOOR_WINDOW / BLOCK))
+        logged_level, logged_at = level, time.time()
         floor_db = 20 * np.log10(floor + 1e-9)
         log(T(f"마이크 준비 (방 소음 {floor_db:.0f}dB, 말소리 기준 {20 * np.log10(level):.0f}dB)",
                f"Microphone ready (room noise {floor_db:.0f}dB, speech threshold {20 * np.log10(level):.0f}dB)"))
@@ -270,7 +291,16 @@ def utterances(cfg, with_time=False, on_ready=None):
         while True:
             b = blocks.get()
             count += 1
-            loud = np.sqrt(np.mean(b ** 2)) > level
+            rms = float(np.sqrt(np.mean(b ** 2)))
+            hist.append(rms)
+            if count % int(1 / BLOCK) == 0:
+                level = min(max(np.percentile(hist, FLOOR_PCT) * 4, 0.004), LEVEL_MAX)
+                now = time.time()
+                if abs(20 * np.log10(level / logged_level)) >= 3 and now - logged_at >= LEVEL_LOG_EVERY:
+                    log(T(f"말소리 기준 {20 * np.log10(logged_level):.0f} → {20 * np.log10(level):.0f}dB (주변 소리에 맞춤)",
+                          f"Speech threshold {20 * np.log10(logged_level):.0f} -> {20 * np.log10(level):.0f}dB (following the background)"))
+                    logged_level, logged_at = level, now
+            loud = rms > level
             if not talking:
                 pre = (pre + [b])[-4:]
                 if loud:
@@ -284,6 +314,8 @@ def utterances(cfg, with_time=False, on_ready=None):
                 pcm = np.concatenate(buf)
                 if len(pcm) > RATE * 0.3:     # 0.3초보다 짧은 건 잡음
                     peak = float(np.abs(pcm).max()) or 1.0
+                    utterances.last = {"raw": pcm, "db": 20 * np.log10(np.sqrt(np.mean(pcm ** 2)) + 1e-9),
+                                       "peak_db": 20 * np.log10(peak), "level_db": 20 * np.log10(level)}
                     pcm = pcm * (0.9 / peak)  # 작은 목소리는 키운다
                     yield (pcm, began) if with_time else pcm
 
@@ -297,6 +329,36 @@ def latin_ratio(text):
     """글자 가운데 로마자 비율(글자가 4개 미만이면 0) — 한국어 모드에서 영어로 말하나 보기."""
     letters = [c for c in text if c.isalpha()]
     return sum(c.isascii() for c in letters) / len(letters) if len(letters) >= 4 else 0.0
+
+
+def save_clip(keep, began, text):
+    """마디 소리(키우기 전 그대로)를 clips\\ 에 wav 로, index.tsv 에 한 줄. 최근 keep 개만 둔다."""
+    info = getattr(utterances, "last", None)
+    if not keep or info is None:
+        return
+    try:
+        import wave
+        os.makedirs(CLIPS, exist_ok=True)
+        name = time.strftime("%m%d_%H%M%S", time.localtime(began)) + f"_{int(began * 1000) % 1000:03d}.wav"
+        with wave.open(os.path.join(CLIPS, name), "wb") as w:
+            w.setnchannels(1)
+            w.setsampwidth(2)
+            w.setframerate(RATE)
+            w.writeframes((np.clip(info["raw"], -1, 1) * 32767).astype(np.int16).tobytes())
+        index = os.path.join(CLIPS, "index.tsv")
+        new = not os.path.exists(index)
+        with open(index, "a", encoding="utf-8") as f:
+            if new:
+                f.write("파일\t시각\t길이\tdB\t최대dB\t기준dB\t받아쓴 글\n")
+            f.write(f"{name}\t{time.strftime('%H:%M:%S', time.localtime(began))}\t{len(info['raw']) / RATE:.2f}\t"
+                    f"{info['db']:.0f}\t{info['peak_db']:.0f}\t{info['level_db']:.0f}\t{' '.join(text.split())}\n")
+        save_clip.n = getattr(save_clip, "n", 0) + 1
+        if save_clip.n % 50 == 1:            # 가끔만 정리한다
+            old = sorted(n for n in os.listdir(CLIPS) if n.endswith(".wav"))[:-keep]
+            for n in old:
+                os.remove(os.path.join(CLIPS, n))
+    except OSError:
+        pass
 
 
 def set_title(state):
@@ -351,6 +413,7 @@ def main():
     asked = None                            # 되물은 명령과 그 시각 — (동작, 시각)
     ignored, hinted, english, en_hinted = [], -1e9, 0, False   # 대기 중 무시한 시각들·마지막 알림·영어 말 수
     admin_checked = None                    # 권한을 본 게임 pid
+    voice_peak = None                       # 마지막으로 알아들은 사람 말의 최대 크기(dB) — 메아리 가리기
     replier.say("sys", "ready", "Atom standing by.")
     # 주소는 줄 끝에 둔다(터미널에서 눌러도 뒤 글자가 안 딸려 오게)
     log(T("명령어 목록·설명서 (폰·패드로 보세요): " + REFERENCE, "Command list & guide (open on your phone): " + REFERENCE + "-en"))
@@ -363,11 +426,21 @@ def main():
             replier.say("sys", "mic_silent", "Microphone is silent.")
     for pcm, began in utterances(cfg, with_time=True, on_ready=mic_check):
         if len(pcm) / RATE > MAX_COMMAND:   # 명령은 짧다. 긴 말은 대화 — 받아쓰지도 않는다
+            save_clip(cfg["clips"], began, "(긴 말, 안 받아씀)")
             continue
         t = time.time()
         text = stt(pcm)
         took = time.time() - t
+        save_clip(cfg["clips"], began, text)
         if not text:
+            continue
+        if SOUND_TAG.match(text):           # 받아쓰기가 소리로만 본 것 — 보기 점수를 매기면 엉뚱한 명령이 걸린다
+            log(T(f"(소리표시라 무시) {text}  [{took:.2f}초]", f"(sound tag, ignored) {text}  [{took:.2f}s]"))
+            continue
+        peak = utterances.last["peak_db"]
+        if voice_peak is not None and replier.playing(began) and peak <= voice_peak - ECHO_DB:
+            log(T(f"(우리 대답 소리라 무시) {text} — 앞 명령보다 {voice_peak - peak:.0f}dB 작음",
+                  f"(our own reply, ignored) {text} — {voice_peak - peak:.0f}dB quieter than the last command"))
             continue
         if replier.is_echo(text):           # 우리 대답이 마이크로 다시 들어온 것
             continue
@@ -383,6 +456,7 @@ def main():
                 replier.last_spoke = -1e9
                 replier.say("sys", "use_english", "English heard. Set the language to English in the config file.")
         if matcher.is_off(text, lang):
+            voice_peak = peak
             if active:
                 log(T(f"꺼짐 「{text}」  [{took:.2f}초]", f"Off \"{text}\"  [{took:.2f}s]"))
             active = False
@@ -391,6 +465,7 @@ def main():
             replier.say("sys", "offline", "Voice control offline.")
             continue
         if matcher.is_wake(text, lang):
+            voice_peak = peak
             if not active:
                 log(T(f"켜짐 「{text}」  [{took:.2f}초]", f"On \"{text}\"  [{took:.2f}s]"))
             active = True
@@ -410,10 +485,9 @@ def main():
                 replier.say("sys", "standby_hint", "Standing by. Say Atom first.")
             continue
         # 되물은 참이면: 「응」은 실행, 「아니」는 취소, 그 밖의 말은 아래에서 새 명령으로 읽는다
-        confirmed = False                   # 「응」으로 확인한 것은 메아리 검사에서 뺀다
         if asked and time.time() - asked[1] < ASK_WAIT:
             if matcher.is_yes(text, lang):
-                actions, confirmed = [asked[0]], True
+                actions = [asked[0]]
                 log(T(f"(되물어 확인) 「{text}」 → {asked[0]}", f"(confirmed) \"{text}\" -> {asked[0]}"))
                 asked = None
             elif matcher.is_no(text, lang):
@@ -430,15 +504,21 @@ def main():
             if len(actions) <= 1:
                 # 한 명령은 받아쓰기 모델에 보기마다 확률을 물어 고른다(글자 맞추기는 「차게」→타겟을 못 함)
                 pick = stt.choose(text, choices, lang)
-                actions = []
+                # 글자로 맞은 명령(목소리 등록에서 배운 그 사람 버릇 포함). 점수가 낮아도 이게 있으면 실행한다 —
+                # 예전엔 버려서 배운 「짠」→점프, 「커플」→디커플이 늘 무시됐고, 사용자는 꺼진 줄 알았다(2026-10-23)
+                by_text, actions = actions, []
                 if pick:
                     act, score, said, gap = pick
                     # 느슨한 선은 한국어 실사용 로그로 맞춘 것 — 영어(whisper)에서는 대화·「chaff→jump」를 실행시켜 안 쓴다
                     far = lang == "ko" and score >= ACCEPT_FAR and gap >= MARGIN_FAR and not said.lower().startswith(matcher.WAKE[lang])
                     if (score >= ACCEPT and gap >= MARGIN) or far:   # 「아톰 ○○」 꼴은 켜고 끄는 말이 샌 것일 때가 많아 느슨한 선에서 뺀다
                         actions = [act]
+                    elif by_text:
+                        actions = by_text
+                        log(T(f"(글자로 맞음) 「{text}」 → {by_text[0]} (점수 {score:.2f})", f"(matched by text) \"{text}\" -> {by_text[0]} (score {score:.2f})"))
                     elif score >= ASK and (act != (asked or (None,))[0]):
                         asked = (act, time.time())
+                        voice_peak = peak
                         log(T(f"(되물음) 「{text}」 — 「{said}」 인가요? {score:.2f}/{gap:.2f}  [{time.time() - t:.2f}초]",
                                f"(asking) \"{text}\" — \"{said}\"? {score:.2f}/{gap:.2f}  [{time.time() - t:.2f}s]"))
                         replier.last_spoke = -1e9
@@ -450,12 +530,13 @@ def main():
                     if not actions:
                         log(T(f"(무시) {text} — 「{said}」 {score:.2f}  [{time.time() - t:.2f}초]", f"(ignored) {text} — \"{said}\" {score:.2f}  [{time.time() - t:.2f}s]"))
                         continue
+                elif by_text:
+                    actions = by_text
+                    log(T(f"(글자로 맞음) 「{text}」 → {by_text[0]}", f"(matched by text) \"{text}\" -> {by_text[0]}"))
                 else:
                     log(T(f"(무시) {text}  [{time.time() - t:.2f}초]", f"(ignored) {text}  [{time.time() - t:.2f}s]"))
                     continue
-        if len(actions) == 1 and not confirmed and replier.echo_of(actions[0], began):
-            log(T(f"(우리 대답 소리라 무시) {text} → {actions[0]}", f"(our own reply, ignored) {text} -> {actions[0]}"))
-            continue
+        voice_peak = peak
         asked = None
         if chat_open():
             log(T(f"채팅창이 열려 있어 안 보냄: {text}", f"Chat window open — not sent: {text}"))
