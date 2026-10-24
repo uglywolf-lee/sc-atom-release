@@ -25,6 +25,14 @@ Atom starts in English unless Windows is set to Korean; change it with `"languag
 Atom finds the game wherever you installed it (any drive or folder). If `keys.bat` still can't find it, drag the game folder into its window,
 or set `"actionmaps"` in `atom_config.json` to it (e.g. `"D:/Games/Roberts Space Industries/StarCitizen"`).
 
+## Key timing
+
+Some commands need the key held, not tapped. Atom holds them a little longer than the game's minimum so they still register on a laggy server.
+
+- Quantum mode (B): 0.47 s
+
+We tried 0.30–0.60 s on EU and US servers (ping 40–210 ms, 120 presses each). Below 0.40 s the game missed 6% of presses when ping was above 150 ms; at 0.47 s it missed none.
+
 ## If something goes wrong
 
 Open an [issue](https://github.com/uglywolf-lee/sc-atom-release/issues) and attach `atom_log.txt` from the Atom folder (drag the file into the issue box).

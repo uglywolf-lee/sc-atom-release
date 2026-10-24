@@ -27,6 +27,14 @@ https://sc.uglywolf.org/atom
 게임을 어느 드라이브·폴더에 깔았든 알아서 찾습니다. 그래도 `keys.bat` 이 못 찾으면 그 창에 게임 폴더를 끌어다 놓거나,
 `atom_config.json` 의 `"actionmaps"` 에 게임 폴더를 적습니다(예: `"D:/Games/Roberts Space Industries/StarCitizen"`).
 
+## 키 누르는 시간
+
+몇몇 명령은 키를 짧게 치지 않고 누르고 있어야 합니다. 핑이 나쁜 서버에서도 먹도록 게임 최소값보다 조금 길게 누릅니다.
+
+- 퀀텀 모드(B): 0.47초
+
+유럽·미국 서버(핑 40~210ms)에서 0.30~0.60초를 120번씩 눌러 봤습니다. 핑이 150ms 를 넘으면 0.40초 미만은 6% 가 씹혔고, 0.47초에서는 한 번도 안 씹혔습니다.
+
 ## 안 될 때
 
 [이슈](https://github.com/uglywolf-lee/sc-atom-release/issues)를 열고 아톰 폴더의 `atom_log.txt` 를 첨부해 주세요(파일을 이슈 입력칸에 끌어다 놓으면 됩니다).
