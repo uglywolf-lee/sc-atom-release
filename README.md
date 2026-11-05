@@ -16,7 +16,7 @@ Get `SC-Atom-<version>.zip` from [Releases](https://github.com/uglywolf-lee/sc-a
 | `run_atom.bat` | Start Atom |
 | `mic.bat` | Pick your microphone — speak and click the row whose bar moves |
 | `keys.bat` | Once, with the game closed: add a spare Left Alt + letter to actions that have no default key (backup made, `keys.bat undo` reverts) |
-| `update.bat` | Check for a new version; asks before updating (settings and voice profile are kept). Atom also asks at start when one is out |
+| `update.bat` | Check for a new version; asks before updating (settings and voice profile are kept). Atom also shows a line in its window log at start when one is out |
 | `selftest.bat` | Cockpit key test — presses the mode keys one by one, no talking |
 | `train.bat` | Voice training (mainly for Korean) |
 
@@ -42,7 +42,7 @@ The log shows folder paths (which may include your Windows user name) and your m
 
 ## License
 
-GPL-3.0 (`LICENSE`). Source code is in [`source/`](https://github.com/uglywolf-lee/sc-atom-release/tree/main/source) in this repo and in the `source\` folder of the zip (data files such as `commands.tsv`, voices and models ship in the release zip).
+Freeware. Free for personal use, and you may share the original zip unchanged and free of charge. Modifying it or extracting its data is not allowed. Full terms: `LICENSE` in the zip.
 Third-party components (whisper.cpp, Vosk, NumPy, PortAudio …) and the reply voices (Kokoro-82M) are listed in `THIRD-PARTY-NOTICES.txt` inside the zip.
 
 Unofficial fan tool. Star Citizen is a trademark of Cloud Imperium Games.

@@ -18,7 +18,7 @@ https://sc.uglywolf.org/atom
 | `run_atom.bat` | 아톰 켜기 |
 | `mic.bat` | 마이크 고르기 — 말하면서 막대가 움직이는 줄을 누르기 |
 | `keys.bat` | 처음 한 번, 게임을 끄고: 기본 키 없는 명령에 빈 왼쪽 Alt+글자 넣기(백업 생김, `keys.bat undo` 로 되돌림) |
-| `update.bat` | 새 판이 있나 보고, 올릴지 물은 뒤 올림(설정·목소리 등록은 그대로). 켤 때도 새 판이면 묻습니다 |
+| `update.bat` | 새 판이 있나 보고, 올릴지 물은 뒤 올림(설정·목소리 등록은 그대로). 켤 때 새 판이 있으면 아톰 창 기록에 한 줄 알립니다 |
 | `train.bat` | 목소리 등록(한국어 권장, 10분 안팎) |
 | `selftest.bat` | 조종석에서 모드 키를 말 없이 시험 |
 
@@ -44,7 +44,7 @@ https://sc.uglywolf.org/atom
 
 ## 라이선스
 
-GPL-3.0 (`LICENSE`). 소스는 이 저장소의 [`source/`](https://github.com/uglywolf-lee/sc-atom-release/tree/main/source) 와 zip 안 `source\` 폴더에 있습니다(명령표·목소리·모델 같은 데이터는 zip 에).
+프리웨어입니다. 개인은 무료로 쓰고, 받은 zip 그대로라면 무료로 다시 나눠 줄 수 있습니다. 고치기·데이터 떼어 쓰기는 안 됩니다. 자세한 약관은 zip 안 `LICENSE`.
 함께 쓰는 부품(whisper.cpp, Vosk, NumPy, PortAudio 등)과 대답 목소리(Kokoro-82M)의 라이선스는 zip 안 `THIRD-PARTY-NOTICES.txt`.
 
 비공식 팬 도구입니다. Star Citizen 은 Cloud Imperium Games 의 상표입니다.
