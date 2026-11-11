@@ -1,0 +1,119 @@
+SC-KoChat (스타시티즌 한글 채팅) · SC-Atom 사용 약관
+© 2026 uglywolf. All rights reserved.
+
+[한국어]
+
+1. 무료 이용
+   이 프로그램(SC-KoChat 과 그 부속 SC-Atom, 함께 든 데이터·목소리·그림을 포함, 이하 「프로그램」)은
+   개인이 무료로 쓸 수 있습니다. 상업적 이용(판매, 유료 서비스·유료 배포에 포함 등)은 허락 없이 할 수 없습니다.
+
+2. 재배포
+   받은 그대로(파일을 고치거나 빼거나 더하지 않은 원본 zip)라면 누구에게나 무료로 다시 나눠 줄 수 있습니다.
+   이때 이 약관과 저작권 표시를 지우면 안 되고, 돈을 받으면 안 됩니다.
+
+3. 하지 말아야 할 것
+   다음은 저작권자의 서면 허락 없이 할 수 없습니다.
+   - 프로그램을 고치거나, 고친 것을 나눠 주는 것
+   - 프로그램에 든 데이터(한글 입력표, 단어장, 명령표, 대답 문장, 목소리, 그림 등)를 떼어 내 다른 프로그램·번역판·서비스에 쓰는 것
+   - 법이 허용하는 범위를 넘어 프로그램을 역분석·디컴파일·분해하는 것
+   (저작권법이 정한 호환을 위한 역분석 등, 법이 사용자에게 보장하는 권리는 이 약관으로 막지 않습니다.)
+
+4. 다른 사람의 부품
+   프로그램에는 다른 사람이 만든 공개 소프트웨어와 모델이 들어 있으며, 그 부분에는 각자의 라이선스가
+   적용됩니다(함께 든 고지 파일 참고). 이 약관은 uglywolf 가 만든 부분에만 적용됩니다.
+   게임 텍스트의 한국어 번역은 CIG 저작물의 2차적저작물로, 이 약관이 아니라 CIG 의 커뮤니티 로컬라이제이션
+   방침(상업적 이용 금지, CIG 가 요청하면 중단)을 따릅니다.
+
+5. 스타시티즌과의 관계
+   이 프로그램은 팬이 만든 비공식 도구이며 Cloud Imperium Games·Roberts Space Industries 와 관계가 없고
+   그들이 보증하지 않습니다. Star Citizen® 등은 해당 회사의 상표입니다.
+   게임 이용 약관을 지키는 것은 사용자의 책임입니다.
+
+6. 게임 파일·업데이트
+   - SC-KoChat 은 켤 때마다 게임 폴더(LIVE·PTU 등)의 data\Localization\korean_(south_korea)\global.ini 에
+     한글 입력표와 한국어 번역을 넣고, user.cfg 에 「g_language = korean_(south_korea)」 줄을 넣거나 바꿉니다.
+     다른 사람이 넣은 줄은 지우지 않으며, 설정의 [게임에서 지우기] 로 되돌릴 수 있습니다.
+   - 「한글 패치 자동다운 안하기」를 켜지 않았다면, 켤 때 한국어 번역 파일의 새 판을 받아 넣습니다.
+   - 프로그램의 새 판이 나오면 알려 줍니다. 사용자가 [업데이트] 를 누르면(SC-Atom 은 update.bat) 새 판을 받아
+     프로그램 파일을 바꾸고 다시 켭니다. 설정과 기록은 그대로 둡니다. 새 판에는 그 판의 약관이 적용됩니다.
+   - SC-Atom 의 [키 넣기] 는 게임 키 설정 파일(actionmaps.xml)의 빈 자리에 보조 키를 더합니다.
+     원래 파일은 백업하며, 되돌리기(keys.bat undo)로 SC-Atom 이 넣은 키만 지울 수 있습니다.
+
+7. 정보 보내기
+   - 「인터넷 번역」을 켜 두면 번역할 글(보내는 채팅과, 화면에서 읽은 받는 채팅)이 구글(번역·입력 도구)로 보내집니다.
+     끄면 번역하지 않습니다 — 보내는 글은 한글 그대로, 받는 채팅은 원문 그대로 보입니다.
+   - 깃허브에 접속하는 것은 새 판 확인, 한국어 번역 파일 받기(6조), 사용자가 고른 업데이트·다운로드뿐입니다.
+   - 받는 채팅 읽기·색적신호는 화면을 이 PC 안에서만 읽습니다. 화면 그림은 저장하거나 보내지 않습니다.
+   - SC-Atom 의 음성은 이 PC 안에서만 알아듣고 밖으로 보내지 않습니다. MFD 단추판은 켜거나 「마이크 안 씀」을
+     골랐을 때만 집 망 안에서 열립니다.
+   - 기록 파일은 이 PC 안에만 남습니다. [진단 파일] 은 사용자가 직접 보낼 때만 전해집니다.
+   - 그 밖에 사용자 정보를 모으거나 보내지 않습니다.
+
+8. 보증 없음
+   프로그램은 있는 그대로 제공됩니다. 오류가 없거나 특정 목적에 맞는다고 보증하지 않으며, 프로그램을 써서 생긴
+   손해(게임 계정 문제, 게임 파일·설정 변경, 업데이트 실패, 데이터 손실 등)에 대해 법이 허용하는 범위에서 책임지지 않습니다.
+
+9. 약관 바뀜
+   약관은 새 판에서 바뀔 수 있고, 바뀌면 처음 켤 때 다시 동의를 묻습니다. 동의하지 않으면 프로그램을 쓸 수 없습니다.
+
+[English]
+
+1. Free use
+   This software (SC-KoChat and its companion SC-Atom, including the bundled data, voices and images; "the Software")
+   is free for personal use. Commercial use (selling it, or including it in a paid service or paid distribution)
+   is not allowed without permission.
+
+2. Redistribution
+   You may share the Software free of charge, but only exactly as received (the original zip, with no files changed,
+   removed or added). Keep these terms and the copyright notice, and do not charge for it.
+
+3. Not allowed without written permission from the copyright holder
+   - Modifying the Software, or distributing a modified version
+   - Extracting its data (Korean input table, word list, command tables, reply lines, voices, images, etc.) for use in other software,
+     translation packs or services
+   - Reverse engineering, decompiling or disassembling the Software beyond what applicable law permits
+   (Rights the law guarantees to users, such as reverse engineering for interoperability, are not limited by these terms.)
+
+4. Third-party components
+   The Software includes open-source software and models made by others, each under its own license
+   (see the bundled notice file). These terms apply only to the parts made by uglywolf.
+   The Korean translation of game text is a derivative of CIG's work and follows CIG's community localization
+   policy (no commercial use; stopped if CIG asks), not these terms.
+
+5. Star Citizen
+   This is an unofficial fan-made tool, not affiliated with or endorsed by Cloud Imperium Games or
+   Roberts Space Industries. Star Citizen® and related marks are trademarks of their respective owners.
+   You are responsible for following the game's terms of service.
+
+6. Game files and updates
+   - Each time it starts, SC-KoChat writes the Korean input table and Korean translation into
+     data\Localization\korean_(south_korea)\global.ini in your game folders (LIVE, PTU, etc.) and adds or changes the line
+     "g_language = korean_(south_korea)" in user.cfg. Lines added by others are kept; the [게임에서 지우기] ("Remove from game")
+     button in the settings undoes it.
+   - Unless "Don't auto-download the Korean patch" is on, it downloads the latest Korean translation file at start.
+   - When a new version is out, you are told. If you press [Update] (update.bat for SC-Atom), the new version is
+     downloaded, the program files are replaced and it restarts. Your settings and logs are kept. Each version is
+     covered by the terms shipped with it.
+   - SC-Atom's [Add keys] adds spare key bindings to empty slots in your game key file (actionmaps.xml). The original
+     file is backed up, and "keys.bat undo" removes only the keys SC-Atom added.
+
+7. Data sent
+   - With "online translation" on, text to be translated (chat you send, and received chat read from the screen) is
+     sent to Google (Translate / Input Tools). With it off, nothing is translated: your Korean is sent as typed and
+     received chat is shown as is.
+   - The Software contacts GitHub only to check for new versions, to download the Korean translation file (section 6),
+     and for updates or downloads you choose.
+   - Received-chat reading and the signature reader read the screen on this PC only. Screen images are not saved or sent.
+   - SC-Atom recognizes speech on this PC only and does not send it anywhere. The MFD panel opens on your home
+     network only when you turn it on or choose "No microphone".
+   - Log files stay on this PC. A [진단 파일] (diagnostics) file is only shared if you send it yourself.
+   - No other user information is collected or sent.
+
+8. No warranty
+   The Software is provided "as is", without warranty of any kind. To the extent permitted by law, the author is not
+   liable for any damage arising from its use (including game account issues, changes to game files or settings,
+   failed updates, or data loss).
+
+9. Changes
+   These terms may change in a new version; you will be asked to agree again on first start.
+   If you do not agree, you may not use the Software.
